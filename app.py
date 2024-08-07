@@ -1,16 +1,16 @@
 import streamlit as st
 import tensorflow as tf
-from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
+from tensorflow.keras.applications.xception import Xception, preprocess_input
 from tensorflow.keras.preprocessing import image
 from tensorflow.keras.models import load_model
 import numpy as np
 import os
 
 # Load the trained model
-model_path = 'resnet_model.h5'  # Update with your model path
+model_path = 'xception_model.h5'  # Update with your model path
 model = load_model(model_path)
 
-st.title("Deepfake Detection with ResNet50")
+st.title("Deepfake Detection with Xception")
 st.write("Upload an image to predict if it's real or fake.")
 
 # File uploader
@@ -23,7 +23,7 @@ if uploaded_file is not None:
     st.write("Classifying...")
 
     # Preprocess the image
-    img = image.load_img(uploaded_file, target_size=(224, 224))
+    img = image.load_img(uploaded_file, target_size=(299, 299))
     img_array = image.img_to_array(img)
     img_array = np.expand_dims(img_array, axis=0)
     img_array = preprocess_input(img_array)
@@ -43,7 +43,7 @@ def display_examples():
     
     st.write("Example Images:")
     for example_img_path in example_images:
-        example_img = image.load_img(example_img_path, target_size=(224, 224))
+        example_img = image.load_img(example_img_path, target_size=(299, 299))
         st.image(example_img, caption=os.path.basename(example_img_path), use_column_width=True)
 
 # Button to show examples
