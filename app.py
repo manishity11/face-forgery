@@ -7,7 +7,7 @@ import numpy as np
 import os
 
 # Load the trained model
-model_path = 'path/to/your/trained_model.h5'  # Update with your model path
+model_path = 'resnet_model.h5'  # Update with your model path
 model = load_model(model_path)
 
 st.title("Deepfake Detection with ResNet50")
