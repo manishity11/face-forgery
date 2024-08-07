@@ -1,6 +1,5 @@
 import streamlit as st
 import numpy as np
-import cv2
 import tensorflow as tf
 from tensorflow.keras.applications.resnet50 import preprocess_input
 from tensorflow.keras.models import load_model
