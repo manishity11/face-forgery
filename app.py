@@ -1,51 +1,51 @@
 import streamlit as st
-import numpy as np
 import tensorflow as tf
-from tensorflow.keras.applications.resnet50 import preprocess_input
+from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
+from tensorflow.keras.preprocessing import image
 from tensorflow.keras.models import load_model
-from PIL import Image
+import numpy as np
+import os
 
-# Load the trained ResNet50 model
-model = load_model('resnet_model.h5')
+# Load the trained model
+model_path = 'path/to/your/trained_model.h5'  # Update with your model path
+model = load_model(model_path)
 
-# Define the class names
-class_names = ['Real', 'Fake']
+st.title("Deepfake Detection with ResNet50")
+st.write("Upload an image to predict if it's real or fake.")
 
-def preprocess_image(image):
-    # Resize the image to 224x224
-    image = image.resize((224, 224))
-    # Convert the image to a numpy array
-    image = np.array(image)
-    # Expand dimensions to match the input shape for the model
-    image = np.expand_dims(image, axis=0)
-    # Preprocess the image using ResNet50's preprocess_input function
-    image = preprocess_input(image)
-    return image
+# File uploader
+uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
 
-def main():
-    st.title("Image Classification with ResNet50")
+if uploaded_file is not None:
+    # Display the uploaded image
+    st.image(uploaded_file, caption='Uploaded Image', use_column_width=True)
+    st.write("")
+    st.write("Classifying...")
 
-    # File uploader to upload images
-    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "png"])
+    # Preprocess the image
+    img = image.load_img(uploaded_file, target_size=(224, 224))
+    img_array = image.img_to_array(img)
+    img_array = np.expand_dims(img_array, axis=0)
+    img_array = preprocess_input(img_array)
 
-    if uploaded_file is not None:
-        # Convert the file to an image
-        image = Image.open(uploaded_file)
-        
-        # Preprocess the image
-        preprocessed_image = preprocess_image(image)
+    # Make prediction
+    prediction = model.predict(img_array)
+    prediction_label = "Fake" if prediction[0][0] > 0.5 else "Real"
 
-        # Display the uploaded image
-        st.image(image, caption='Uploaded Image.', use_column_width=True)
-        st.write("")
-        st.write("Classifying...")
+    # Display the result
+    st.write(f"The model predicts this image is: **{prediction_label}**")
+    st.write(f"Confidence score: {prediction[0][0]:.4f}")
 
-        # Make predictions
-        predictions = model.predict(preprocessed_image)
-        prediction_class = np.argmax(predictions, axis=1)
+# Function to display examples
+def display_examples():
+    examples_path = 'path/to/examples/'  # Update with your examples path
+    example_images = [os.path.join(examples_path, fname) for fname in os.listdir(examples_path) if fname.endswith(('jpg', 'jpeg', 'png'))]
+    
+    st.write("Example Images:")
+    for example_img_path in example_images:
+        example_img = image.load_img(example_img_path, target_size=(224, 224))
+        st.image(example_img, caption=os.path.basename(example_img_path), use_column_width=True)
 
-        # Display the prediction
-        st.write(f"The image is classified as: {class_names[prediction_class[0]]}")
-
-if __name__ == "__main__":
-    main()
+# Button to show examples
+if st.button("Show Examples"):
+    display_examples()
