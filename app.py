@@ -1,13 +1,12 @@
 import streamlit as st
 import numpy as np
-import cv2
 import tensorflow as tf
 from tensorflow.keras.applications.resnet50 import preprocess_input
 from tensorflow.keras.models import load_model
 from PIL import Image
 
 # Load the trained ResNet50 model
-model = load_model('path/to/your/saved/model.h5')
+model = load_model('resnet_model.h5')
 
 # Define the class names
 class_names = ['Real', 'Fake']
